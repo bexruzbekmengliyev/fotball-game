@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚽ ULTIMATE FOOTBALL SIMULATOR 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&family=Bebas+Neue&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #fff;
+            cursor: crosshair;
+        }
+
+        /* KIRISH ANIMATSIYASI */
+        #introScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, #000 0%, #111 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .intro-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00ff87, #60efff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 2s linear infinite, scaleIn 1s ease-out;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            opacity: 0;
+            animation: scaleIn 0.8s ease-out forwards, gradientMove 2s linear infinite 0.8s;
+        }
+
+        .intro-subtitle {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5em;
+            color: #60efff;
+            margin-top: 10px;
+            opacity: 0;
+            animation: slideUp 0.8s ease-out forwards 0.5s;
+            letter-spacing: 10px;
+        }
+
+        .intro-loader {
+            margin-top: 50px;
+            width: 300px;
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards 1s;
+        }
+
+        .intro-loader-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff87, #60efff);
+            width: 0%;
+            animation: loadBar 2s ease-in-out forwards 1.2s;
+            border-radius: 3px;
+            box-shadow: 0 0 15px #00ff87;
+        }
+
+        .intro-text {
+            font-family: 'Rajdhani', sans-serif;
+            margin-top: 15px;
+            color: #888;
+            font-size: 0.9em;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards 1s;
+        }
+
+        .intro-players {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards 1.5s;
+        }
+
+        .intro-player {
+            width: 80px;
+            height: 120px;
+            animation: runIn 0.6s ease-out both;
+        }
+
+        .intro-player:nth-child(1) { animation-delay: 1.8s; }
+        .intro-player:nth-child(2) { animation-delay: 2.0s; }
+        .intro-player:nth-child(3) { animation-delay: 2.2s; }
+        .intro-player:nth-child(4) { animation-delay: 2.4s; }
+        .intro-player:nth-child(5) { animation-delay: 2.6s; }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.3); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes loadBar {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        @keyframes runIn {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* BOSH MENYU */
+        #mainMenu {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, #1a237e 0%, #000030 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9000;
+        }
+
+        .menu-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            animation: pulseTitle 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseTitle {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(255,215,0,0.3)); }
+            50% { filter: drop-shadow(0 0 25px rgba(255,215,0,0.6)); }
+        }
+
+        .menu-subtitle {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2em;
+            color: #60efff;
+            letter-spacing: 5px;
+            margin-bottom: 50px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .menu-btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.3em;
+            padding: 18px 60px;
+            border: 2px solid;
+            border-radius: 0;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .menu-btn-primary {
+            border-color: #00ff87;
+            color: #00ff87;
+        }
+
+        .menu-btn-primary:hover {
+            background: #00ff87;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0,255,135,0.5);
+        }
+
+        .menu-btn-secondary {
+            border-color: #60efff;
+            color: #60efff;
+        }
+
+        .menu-btn-secondary:hover {
+            background: #60efff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(96,239,255,0.5);
+        }
+
+        /* JAMOA TANLASH */
+        #teamSelect {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #0a0a15;
+            display: none;
+            flex-direction: column;
+            z-index: 8000;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .team-select-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2em;
+            text-align: center;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+        }
+
+        .teams-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .team-card {
+            background: linear-gradient(135deg, #151525 0%, #0a0a1a 100%);
+            border: 1px solid #333;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .team-card:hover::before {
+            left: 100%;
+        }
+
+        .team-logo-svg {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+        }
+
+        .team-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5em;
+            text-align: center;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .team-players-list {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 10px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* O'YIN EKRANI */
+        #gameScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #111;
+            display: none;
+            flex-direction: column;
+            z-index: 7000;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.7));
+            border-bottom: 2px solid #333;
+        }
+
+        .score-team {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .score-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .score-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #00ff87;
+            text-shadow: 0 0 20px rgba(0,255,135,0.5);
+        }
+
+        .match-info {
+            text-align: center;
+        }
+
+        .match-time {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .match-status {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8em;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .game-field-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .field-container {
+            position: relative;
+            width: 95%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            background: linear-gradient(180deg, 
+                #2d7a3e 0%, #3d8b4d 10%, 
+                #2d7a3e 10%, #3d8b4d 20%,
+                #2d7a3e 20%, #3d8b4d 30%,
+                #2d7a3e 30%, #3d8b4d 40%,
+                #2d7a3e 40%, #3d8b4d 50%,
+                #2d7a3e 50%, #3d8b4d 60%,
+                #2d7a3e 60%, #3d8b4d 70%,
+                #2d7a3e 70%, #3d8b4d 80%,
+                #2d7a3e 80%, #3d8b4d 90%,
+                #2d7a3e 90%, #3d8b4d 100%
+            );
+            border: 3px solid rgba(255,255,255,0.8);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Darvozalar */
+        .goal-left {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 35%;
+            background: repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(255,255,255,0.3) 5px, rgba(255,255,255,0.3) 6px);
+            border-right: 2px solid #fff;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+        }
+
+        .goal-right {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 35%;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 6px, transparent 6px, transparent 11px);
+            border-left: 2px solid #fff;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+        }
+
+        /* Markaziy chiziq */
+        .center-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .center-circle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+        }
+
+        /* O'yinchilar */
+        .player-figure {
+            position: absolute;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .player-figure.selected {
+            filter: drop-shadow(0 0 15px #ffff00);
+            z-index: 20;
+        }
+
+        .player-body {
+            position: relative;
+            width: 40px;
+            height: 70px;
+        }
+
+        /* Bosh */
+        .head {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #f4c57a;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: inset -3px -3px 5px rgba(0,0,0,0.2);
+        }
+
+        .hair {
+            position: absolute;
+            top: -2px;
+            left: 1px;
+            width: 16px;
+            height: 8px;
+            background: #333;
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* Tana */
+        .torso {
+            width: 24px;
+            height: 28px;
+            margin: 2px auto 0;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .jersey-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* Qo'llar */
+        .arms {
+            position: absolute;
+            top: 20px;
+            width: 40px;
+            height: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .arm {
+            width: 6px;
+            height: 22px;
+            border-radius: 3px;
+            position: absolute;
+            transform-origin: top center;
+        }
+
+        .arm-left {
+            left: 0;
+            transform: rotate(15deg);
+        }
+
+        .arm-right {
+            right: 0;
+            transform: rotate(-15deg);
+        }
+
+        /* Oyoqlar */
+        .legs {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0;
+            padding: 0 4px;
+        }
+
+        .leg {
+            width: 7px;
+            height: 22px;
+            border-radius: 3px;
+            transform-origin: top center;
+        }
+
+        /* Oyoq kiyimlari */
+        .boot {
+            width: 10px;
+            height: 6px;
+            background: #111;
+            border-radius: 2px 5px 2px 2px;
+            margin-top: -1px;
+        }
+
+        /* To'p */
+        .ball {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle at 30% 30%, #fff, #ddd 40%, #bbb 100%);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset -2px -2px 4px rgba(0,0,0,0.2);
+            z-index: 15;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .ball-pattern {
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 50% 30%, #333 15%, transparent 16%),
+                radial-gradient(circle at 20% 60%, #333 10%, transparent 11%),
+                radial-gradient(circle at 80% 70%, #333 12%, transparent 13%);
+            border-radius: 50%;
+        }
+
+        /* Boshqaruv paneli */
+        .controls-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.95), rgba(0,0,0,0.8));
+            border-top: 2px solid #333;
+        }
+
+        .player-selector {
+            font-family: 'Rajdhani', sans-serif;
+            color: #aaa;
+        }
+
+        .selected-player-name {
+            font-family: 'Orbitron', sans-serif;
+            color: #ffd700;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.1em;
+            padding: 12px 30px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: all 0.2s;
+            clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+        }
+
+        .btn-pass {
+            background: linear-gradient(180deg, #3498db, #2980b9);
+            color: #fff;
+        }
+
+        .btn-pass:hover { background: linear-gradient(180deg, #4aa3df, #3498db); transform: scale(1.05); }
+
+        .btn-shoot {
+            background: linear-gradient(180deg, #e74c3c, #c0392b);
+            color: #fff;
+        }
+
+        .btn-shoot:hover { background: linear-gradient(180deg, #ff6b6b, #e74c3c); transform: scale(1.05); }
+
+        .btn-sprint {
+            background: linear-gradient(180deg, #f39c12, #d68910);
+            color: #000;
+        }
+
+        .btn-sprint:hover { background: linear-gradient(180deg, #ffb347, #f39c12); transform: scale(1.05); }
+
+        .btn-switch {
+            background: linear-gradient(180deg, #9b59b6, #8e44ad);
+            color: #fff;
+        }
+
+        .btn-switch:hover { background: linear-gradient(180deg, #a569bd, #9b59b6); transform: scale(1.05); }
+
+        /* Key ko'rsatkichi */
+        .key-hint {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6em;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            margin-left: 8px;
+            border-radius: 3px;
+        }
+
+        /* Gol modali */
+        .goal-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9500;
+        }
+
+        .goal-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goalPulse 0.5s ease-in-out infinite;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+        }
+
+        .goal-scorer {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5em;
+            color: #fff;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .goal-subtitle {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2em;
+            color: #888;
+            margin-top: 30px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes goalPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* O'yin tugashi */
+        .game-over {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9500;
+        }
+
+        .final-result {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .final-score-big {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4em;
+            font-weight: 900;
+            color: #00ff87;
+            margin: 20px 0;
+            text-shadow: 0 0 30px rgba(0,255,135,0.5);
+        }
+
+        /* Qaytish tugmasi */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1em;
+            padding: 10px 25px;
+            background: transparent;
+            border: 1px solid #666;
+            color: #aaa;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        /* Animatsiyalar */
+        @keyframes playerRun {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .running {
+            animation: playerRun 0.3s ease-in-out infinite;
+        }
+
+        @keyframes kick {
+            0% { transform: rotate(0); }
+            50% { transform: rotate(-45deg); }
+            100% { transform: rotate(0); }
+        }
+
+        .kicking .leg-right {
+            animation: kick 0.3s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .teams-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .menu-title {
+                font-size: 1.8em;
+            }
+            .game-header {
+                padding: 8px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .score-value {
+                font-size: 1.8em;
+            }
+            .controls-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- KIRISH EKRANI -->
+    <div id="introScreen">
+        <div class="intro-logo">⚽ ULTIMATE FOOTBALL</div>
+        <div class="intro-subtitle">SIMULATOR 2026</div>
+        <div class="intro-loader">
+            <div class="intro-loader-bar"></div>
+        </div>
+        <div class="intro-text" id="introText">Loading assets...</div>
+        <div class="intro-players" id="introPlayers"></div>
+    </div>
+
+    <!-- BOSH MENYU -->
+    <div id="mainMenu">
+        <div class="menu-title">⚽ ULTIMATE FOOTBALL</div>
+        <div class="menu-subtitle">SIMULATOR 2026</div>
+        <div class="menu-buttons">
+            <button class="menu-btn menu-btn-primary" onclick="showTeamSelect()">
+                ▶ O'YINNI BOSHLASH
+            </button>
+            <button class="menu-btn menu-btn-secondary" onclick="showControls()">
+                🎮 BOSHQARUV
+            </button>
+        </div>
+    </div>
+
+    <!-- JAMOA TANLASH -->
+    <div id="teamSelect">
+        <button class="back-btn" onclick="showMainMenu()">⬅ ORQAGA</button>
+        <div class="team-select-title">JAMOANGIZNI TANLANG</div>
+        <div class="teams-container" id="teamsGrid"></div>
+    </div>
+
+    <!-- O'YIN EKRANI -->
+    <div id="gameScreen">
+        <div class="game-header">
+            <div class="score-team">
+                <canvas class="score-logo" id="homeLogo"></canvas>
+                <span class="score-name" id="homeName">HOME</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span class="score-value" id="scoreHome">0</span>
+                <div class="match-info">
+                    <div class="match-time" id="matchTime">00:00</div>
+                    <div class="match-status" id="matchStatus">1-BOLIM</div>
+                </div>
+                <span class="score-value" id="scoreAway">0</span>
+            </div>
+            <div class="score-team">
+                <span class="score-name" id="awayName">AWAY</span>
+                <canvas class="score-logo" id="awayLogo"></canvas>
+            </div>
+        </div>
+
+        <div class="game-field-wrapper">
+            <div class="field-container" id="field">
+                <div class="goal-left"></div>
+                <div class="goal-right"></div>
+                <div class="center-line"></div>
+                <div class="center-circle"></div>
+                <div id="playersLayer"></div>
+                <div class="ball" id="ball">
+                    <div class="ball-pattern"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="player-selector">
+                <span>🎯 FAOL O'YINCHI: </span>
+                <span class="selected-player-name" id="activePlayerName">-</span>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn btn-pass" onclick="actionPass()">
+                    PAS <span class="key-hint">A</span>
+                </button>
+                <button class="action-btn btn-switch" onclick="switchPlayer()">
+                    ALMASH <span class="key-hint">Q</span>
+                </button>
+                <button class="action-btn btn-shoot" onclick="actionShoot()">
+                    ZARBA <span class="key-hint">S</span>
+                </button>
+                <button class="action-btn btn-sprint" onclick="actionSprint()">
+                    YUGUR <span class="key-hint">D</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GOL MODALI -->
+    <div class="goal-modal" id="goalModal">
+        <div style="text-align: center;">
+            <div class="goal-text">⚽ GOL!</div>
+            <div class="goal-scorer" id="goalScorer"></div>
+            <div class="goal-subtitle">DAVOM ETISH UCHUN BOSING</div>
+        </div>
+    </div>
+
+    <!-- O'YIN TUGASHI -->
+    <div class="game-over" id="gameOver">
+        <div class="final-result" id="finalResult">O'YIN TUGADI!</div>
+        <div class="final-score-big" id="finalScore">0 - 0</div>
+        <button class="menu-btn menu-btn-primary" onclick="showMainMenu()" style="margin-top: 30px;">
+            BOSH MENYU
+        </button>
+    </div>
+
+    <script>
+        // ============ JAMOALAR ============
+        const teamsData = {
+            real: {
+                name: "Real Madrid",
+                short: "RMA",
+                color: "#ffffff",
+                colorAlt: "#1e3c72",
+                players: [
+                    {n: 1, name: "Courtois", pos: "GK", x: 8, y: 50},
+                    {n: 2, name: "Carvajal", pos: "DF", x: 25, y: 20},
+                    {n: 3, name: "Militão", pos: "DF", x: 22, y: 38},
+                    {n: 4, name: "Alaba", pos: "DF", x: 22, y: 62},
+                    {n: 23, name: "Mendy", pos: "DF", x: 25, y: 80},
+                    {n: 8, name: "Valverde", pos: "MF", x: 38, y: 30},
+                    {n: 10, name: "Modrić", pos: "MF", x: 38, y: 50},
+                    {n: 15, name: "Tchouaméni", pos: "MF", x: 38, y: 70},
+                    {n: 11, name: "Rodrygo", pos: "FW", x: 52, y: 25},
+                    {n: 9, name: "Mbappé", pos: "FW", x: 55, y: 50},
+                    {n: 7, name: "Vinícius", pos: "FW", x: 52, y: 75}
+                ]
+            },
+            barca: {
+                name: "Barcelona",
+                short: "BAR",
+                color: "#a50044",
+                colorAlt: "#004d98",
+                players: [
+                    {n: 1, name: "Ter Stegen", pos: "GK", x: 92, y: 50},
+                    {n: 2, name: "Koundé", pos: "DF", x: 75, y: 20},
+                    {n: 4, name: "Araújo", pos: "DF", x: 78, y: 38},
+                    {n: 23, name: "Christensen", pos: "DF", x: 78, y: 62},
+                    {n: 3, name: "Balde", pos: "DF", x: 75, y: 80},
+                    {n: 21, name: "De Jong", pos: "MF", x: 62, y: 35},
+                    {n: 8, name: "Pedri", pos: "MF", x: 62, y: 50},
+                    {n: 6, name: "Gavi", pos: "MF", x: 62, y: 65},
+                    {n: 19, name: "Yamal", pos: "FW", x: 48, y: 25},
+                    {n: 9, name: "Lewandowski", pos: "FW", x: 45, y: 50},
+                    {n: 11, name: "Raphinha", pos: "FW", x: 48, y: 75}
+                ]
+            },
+            city: {
+                name: "Man City",
+                short: "MCI",
+                color: "#6cabdd",
+                colorAlt: "#1c2c5b",
+                players: [
+                    {n: 31, name: "Ederson", pos: "GK", x: 8, y: 50},
+                    {n: 2, name: "Walker", pos: "DF", x: 25, y: 20},
+                    {n: 3, name: "Dias", pos: "DF", x: 22, y: 38},
+                    {n: 25, name: "Akanji", pos: "DF", x: 22, y: 62},
+                    {n: 24, name: "Gvardiol", pos: "DF", x: 25, y: 80},
+                    {n: 16, name: "Rodri", pos: "MF", x: 38, y: 50},
+                    {n: 17, name: "De Bruyne", pos: "MF", x: 42, y: 35},
+                    {n: 20, name: "Bernardo", pos: "MF", x: 42, y: 65},
+                    {n: 47, name: "Foden", pos: "FW", x: 52, y: 25},
+                    {n: 9, name: "Haaland", pos: "FW", x: 55, y: 50},
+                    {n: 10, name: "Grealish", pos: "FW", x: 52, y: 75}
+                ]
+            },
+            bayern: {
+                name: "Bayern",
+                short: "BAY",
+                color: "#dc052d",
+                colorAlt: "#0066b2",
+                players: [
+                    {n: 1, name: "Neuer", pos: "GK", x: 92, y: 50},
+                    {n: 40, name: "Mazraoui", pos: "DF", x: 75, y: 20},
+                    {n: 2, name: "Upamecano", pos: "DF", x: 78, y: 38},
+                    {n: 3, name: "Kim", pos: "DF", x: 78, y: 62},
+                    {n: 19, name: "Davies", pos: "DF", x: 75, y: 80},
+                    {n: 6, name: "Kimmich", pos: "MF", x: 62, y: 35},
+                    {n: 8, name: "Goretzka", pos: "MF", x: 62, y: 50},
+                    {n: 42, name: "Musiala", pos: "MF", x: 58, y: 65},
+                    {n: 10, name: "Sané", pos: "FW", x: 48, y: 25},
+                    {n: 9, name: "Kane", pos: "FW", x: 45, y: 50},
+                    {n: 11, name: "Coman", pos: "FW", x: 48, y: 75}
+                ]
+            },
+            liverpool: {
+                name: "Liverpool",
+                short: "LIV",
+                color: "#c8102e",
+                colorAlt: "#00b2a9",
+                players: [
+                    {n: 1, name: "Alisson", pos: "GK", x: 8, y: 50},
+                    {n: 66, name: "Alexander-Arnold", pos: "DF", x: 25, y: 20},
+                    {n: 4, name: "Van Dijk", pos: "DF", x: 22, y: 38},
+                    {n: 5, name: "Konaté", pos: "DF", x: 22, y: 62},
+                    {n: 26, name: "Robertson", pos: "DF", x: 25, y: 80},
+                    {n: 3, name: "Endō", pos: "MF", x: 38, y: 50},
+                    {n: 8, name: "Szoboszlai", pos: "MF", x: 42, y: 35},
+                    {n: 10, name: "Mac Allister", pos: "MF", x: 42, y: 65},
+                    {n: 11, name: "Salah", pos: "FW", x: 52, y: 25},
+                    {n: 9, name: "Núñez", pos: "FW", x: 55, y: 50},
+                    {n: 7, name: "Díaz", pos: "FW", x: 52, y: 75}
+                ]
+            },
+            psg: {
+                name: "PSG",
+                short: "PSG",
+                color: "#004170",
+                colorAlt: "#e30613",
+                players: [
+                    {n: 99, name: "Donnarumma", pos: "GK", x: 92, y: 50},
+                    {n: 2, name: "Hakimi", pos: "DF", x: 75, y: 20},
+                    {n: 5, name: "Marquinhos", pos: "DF", x: 78, y: 38},
+                    {n: 21, name: "Skriniar", pos: "DF", x: 78, y: 62},
+                    {n: 25, name: "Mendes", pos: "DF", x: 75, y: 80},
+                    {n: 33, name: "Zaïre-Emery", pos: "MF", x: 62, y: 35},
+                    {n: 8, name: "Fabián", pos: "MF", x: 62, y: 50},
+                    {n: 17, name: "Vitinha", pos: "MF", x: 62, y: 65},
+                    {n: 10, name: "Dembélé", pos: "FW", x: 48, y: 25},
+                    {n: 9, name: "Gonçalo", pos: "FW", x: 45, y: 50},
+                    {n: 7, name: "Asensio", pos: "FW", x: 48, y: 75}
+                ]
+            }
+        };
+
+        // ============ O'YIN O'ZGARUVCHILARI ============
+        let playerTeam = null;
+        let cpuTeam = null;
+        let scoreHome = 0;
+        let scoreAway = 0;
+        let matchTime = 0;
+        let gameTimer = null;
+        let activePlayerIdx = 0;
+        let ballX = 50, ballY = 50;
+        let keys = {};
+        let isGameActive = false;
+        let cpuInterval = null;
+
+        // ============ KIRISH ANIMATSIYASI ============
+        document.addEventListener('DOMContentLoaded', () => {
+            startIntro();
+        });
+
+        function startIntro() {
+            const texts = [
+                "Loading stadium...",
+                "Initializing players...",
+                "Preparing pitch...",
+                "Loading team data...",
+                "Setting up cameras...",
+                "Finalizing simulation..."
+            ];
+            
+            let i = 0;
+            const textEl = document.getElementById('introText');
+            const interval = setInterval(() => {
+                if (i < texts.length) {
+                    textEl.textContent = texts[i];
+                    i++;
+                }
+            }, 300);
+
+            // Kirish o'yinchilari chizish
+            setTimeout(() => {
+                drawIntroPlayers();
+            }, 1500);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                document.getElementById('introScreen').style.display = 'none';
+                document.getElementById('mainMenu').style.display = 'flex';
+            }, 4000);
+        }
+
+        function drawIntroPlayers() {
+            const container = document.getElementById('introPlayers');
+            const colors = ['#ffffff', '#a50044', '#6cabdd', '#dc052d', '#c8102e'];
+            
+            for (let i = 0; i < 5; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 80;
+                canvas.height = 120;
+                canvas.className = 'intro-player';
+                container.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                drawPlayerFigure(ctx, 40, 60, colors[i], '#111', i + 1, true);
+            }
+        }
+
+        // ============ O'YINCHI CHIZISH (ODAM SHAKLIDA) ============
+        function drawPlayerFigure(ctx, x, y, color, altColor, number, isAnimated) {
+            const scale = 1;
+            const headY = y - 25 * scale;
+            const bodyY = y - 5 * scale;
+            const legY = y + 18 * scale;
+
+            // Soya
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 35, 12, 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Oyoq kiyim
+            ctx.fillStyle = '#111';
+            ctx.fillRect(x - 8, y + 28, 7, 6);
+            ctx.fillRect(x + 2, y + 28, 7, 6);
+
+            // Oyoqlar
+            ctx.fillStyle = color;
+            ctx.fillRect(x - 7, y + 10, 6, 20);
+            ctx.fillRect(x + 2, y + 10, 6, 20);
+
+            // Tana (forma)
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(x - 10, bodyY - 12, 20, 25, 3);
+            ctx.fill();
+
+            // Forma chizig'i
+            ctx.fillStyle = altColor;
+            ctx.fillRect(x - 10, bodyY - 2, 20, 4);
+
+            // Qo'llar
+            ctx.fillStyle = '#f4c57a';
+            ctx.save();
+            ctx.translate(x - 12, bodyY - 5);
+            ctx.rotate(0.2);
+            ctx.fillRect(-2, 0, 4, 18);
+            ctx.restore();
+
+            ctx.save();
+            ctx.translate(x + 12, bodyY - 5);
+            ctx.rotate(-0.2);
+            ctx.fillRect(-2, 0, 4, 18);
+            ctx.restore();
+
+            // Bosh
+            ctx.fillStyle = '#f4c57a';
+            ctx.beginPath();
+            ctx.arc(x, headY, 9, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Soch
+            ctx.fillStyle = '#222';
+            ctx.beginPath();
+            ctx.arc(x, headY - 2, 9, Math.PI, Math.PI * 2);
+            ctx.fill();
+
+            // Ko'zlar
+            ctx.fillStyle = '#333';
+            ctx.fillRect(x - 4, headY - 2, 2, 2);
+            ctx.fillRect(x + 2, headY - 2, 2, 2);
+
+            // Raqam
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${10 * scale}px Orbitron`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(number, x, bodyY + 2);
+        }
+
+        // ============ KANVASDA LOGO CHIZISH ============
+        function drawTeamLogo(canvasId, team) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = 40;
+            canvas.height = 40;
+
+            // Fon
+            ctx.fillStyle = team.color;
+            ctx.beginPath();
+            ctx.arc(20, 20, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ichki chiziq
+            ctx.strokeStyle = team.colorAlt;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(20, 20, 14, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Qisqa nom
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px Orbitron';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(team.short, 20, 20);
+        }
+
+        // ============ MENYU BOSHQARISH ============
+        function showMainMenu() {
+            hideAll();
+            document.getElementById('mainMenu').style.display = 'flex';
+        }
+
+        function showTeamSelect() {
+            hideAll();
+            document.getElementById('teamSelect').style.display = 'flex';
+            renderTeamCards();
+        }
+
+        function hideAll() {
+            ['mainMenu', 'teamSelect', 'gameScreen', 'goalModal', 'gameOver'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+        }
+
+        // ============ JAMOA KARTALARI ============
+        function renderTeamCards() {
+            const grid = document.getElementById('teamsGrid');
+            grid.innerHTML = '';
+
+            Object.keys(teamsData).forEach(key => {
+                const team = teamsData[key];
+                const card = document.createElement('div');
+                card.className = 'team-card';
+                card.innerHTML = `
+                    <canvas class="team-logo-svg" id="logo-${key}" width="80" height="80"></canvas>
+                    <div class="team-name">${team.name}</div>
+                    <div class="team-players-list">
+                        ${team.players.slice(0, 5).map(p => `#${p.n} ${p.name}`).join('<br>')}
+                        ...
+                    </div>
+                `;
+                card.onclick = () => selectTeam(key);
+                grid.appendChild(card);
+
+                // Logo chizish
+                setTimeout(() => {
+                    const canvas = document.getElementById(`logo-${key}`);
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        // Katta logo
+                        ctx.fillStyle = team.color;
+                        ctx.beginPath();
+                        ctx.arc(40, 40, 35, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.strokeStyle = team.colorAlt;
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(40, 40, 28, 0, Math.PI * 2);
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 16px Orbitron';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(team.short, 40, 40);
+                    }
+                }, 50);
+            });
+        }
+
+        // ============ O'YINNI BOSHLASH ============
+        function selectTeam(teamKey) {
+            playerTeam = {...teamsData[teamKey]};
+            playerTeam.players = JSON.parse(JSON.stringify(teamsData[teamKey].players));
+
+            // CPU uchun tasodifiy jamoa
+            const keys = Object.keys(teamsData).filter(k => k !== teamKey);
+            const cpuKey = keys[Math.floor(Math.random() * keys.length)];
+            cpuTeam = {...teamsData[cpuKey]};
+            cpuTeam.players = JSON.parse(JSON.stringify(teamsData[cpuKey].players));
+
+            scoreHome = 0;
+            scoreAway = 0;
+            matchTime = 0;
+            activePlayerIdx = 8; // Hujumchini tanlash
+            ballX = 50;
+            ballY = 50;
+
+            document.getElementById('homeName').textContent = playerTeam.short;
+            document.getElementById('awayName').textContent = cpuTeam.short;
+            document.getElementById('scoreHome').textContent = '0';
+            document.getElementById('scoreAway').textContent = '0';
+
+            drawTeamLogo('homeLogo', playerTeam);
+            drawTeamLogo('awayLogo', cpuTeam);
+
+            hideAll();
+            document.getElementById('gameScreen').style.display = 'flex';
+
+            renderField();
+            updateBall();
+            startGame();
+        }
+
+        // ============ MAYDONNI CHIZISH ============
+        function renderField() {
+            const layer = document.getElementById('playersLayer');
+            layer.innerHTML = '';
+
+            // O'yinchi jamoasi (chap taraf)
+            playerTeam.players.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = `player-figure ${i === activePlayerIdx ? 'selected' : ''}`;
+                div.style.left = `${p.x}%`;
+                div.style.top = `${p.y}%`;
+                div.style.transform = 'translate(-50%, -100%)';
+                div.id = `player-${i}`;
+
+                // Canvas o'yinchi
+                const canvas = document.createElement('canvas');
+                canvas.width = 40;
+                canvas.height = 70;
+                drawPlayerFigure(canvas.getContext('2d'), 20, 35, playerTeam.color, playerTeam.colorAlt, p.n);
+                div.appendChild(canvas);
+
+                layer.appendChild(div);
+            });
+
+            // CPU jamoasi (o'ng taraf)
+            cpuTeam.players.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'player-figure';
+                div.style.left = `${p.x}%`;
+                div.style.top = `${p.y}%`;
+                div.style.transform = 'translate(-50%, -100%)';
+                div.id = `cpu-${i}`;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 40;
+                canvas.height = 70;
+                drawPlayerFigure(canvas.getContext('2d'), 20, 35, cpuTeam.color, cpuTeam.colorAlt, p.n);
+                div.appendChild(canvas);
+
+                layer.appendChild(div);
+            });
+
+            updateActivePlayerDisplay();
+        }
+
+        function updateBall() {
+            const ball = document.getElementById('ball');
+            ball.style.left = `calc(${ballX}% - 8px)`;
+            ball.style.top = `calc(${ballY}% - 8px)`;
+        }
+
+        function updateActivePlayerDisplay() {
+            const p = playerTeam.players[activePlayerIdx];
+            document.getElementById('activePlayerName').textContent = `#${p.n} ${p.name}`;
+        }
+
+        // ============ O'YIN MANTIG'I ============
+        function startGame() {
+            isGameActive = true;
+
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                matchTime++;
+                const mins = Math.floor(matchTime / 60);
+                const secs = matchTime % 60;
+                document.getElementById('matchTime').textContent = 
+                    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                if (mins >= 90) {
+                    endGame();
+                }
+            }, 100); // Tezlashtirilgan vaqt
+
+            // CPU harakati
+            if (cpuInterval) clearInterval(cpuInterval);
+            cpuInterval = setInterval(cpuAction, 3000);
+        }
+
+        function cpuAction() {
+            if (!isGameActive) return;
+
+            // To'pni CPU o'yinchilaridan biriga o'tkazish
+            const idx = Math.floor(Math.random() * cpuTeam.players.length);
+            const cpuP = cpuTeam.players[idx];
+            ballX = cpuP.x;
+            ballY = cpuP.y;
+            updateBall();
+
+            // Gol urishga urinish
+            if (cpuP.x < 25 && Math.random() > 0.65) {
+                if (Math.random() > 0.5) {
+                    scoreAway++;
+                    document.getElementById('scoreAway').textContent = scoreAway;
+                    showGoal(cpuTeam.name, cpuP.name, cpuP.n);
+                } else {
+                    ballX = 50;
+                    ballY = 50;
+                    updateBall();
+                }
+            } else {
+                // To'pni markazga qaytarish
+                ballX = 50;
+                ballY = 40 + Math.random() * 20;
+                updateBall();
+            }
+        }
+
+        // ============ HARAKATLAR ============
+        function actionPass() {
+            if (!isGameActive) return;
+
+            const p = playerTeam.players[activePlayerIdx];
+            
+            // Eng yaqin jamoadoshga uzatish
+            let nearest = null;
+            let minDist = Infinity;
+            
+            playerTeam.players.forEach((tp, i) => {
+                if (i !== activePlayerIdx) {
+                    const dist = Math.abs(tp.x - p.x) + Math.abs(tp.y - p.y);
+                    if (dist < minDist && tp.x > p.x) {
+                        minDist = dist;
+                        nearest = i;
+                    }
+                }
+            });
+
+            if (nearest !== null) {
+                const target = playerTeam.players[nearest];
+                ballX = target.x;
+                ballY = target.y;
+                activePlayerIdx = nearest;
+                updateBall();
+                renderField();
+            }
+        }
+
+        function actionShoot() {
+            if (!isGameActive) return;
+
+            const p = playerTeam.players[activePlayerIdx];
+
+            if (p.x > 70) {
+                // Zarba!
+                if (Math.random() > 0.4) {
+                    scoreHome++;
+                    document.getElementById('scoreHome').textContent = scoreHome;
+                    showGoal(playerTeam.name, p.name, p.n);
+                } else {
+                    // Gol bo'lmadi
+                    ballX = 50;
+                    ballY = 50;
+                    updateBall();
+                }
+            } else {
+                alert("Darvozaga yaqinroq boring!");
+            }
+        }
+
+        function actionSprint() {
+            if (!isGameActive) return;
+
+            const p = playerTeam.players[activePlayerIdx];
+            p.x = Math.min(p.x + 8, 90);
+            p.y += (Math.random() - 0.5) * 10;
+            p.y = Math.max(10, Math.min(90, p.y));
+
+            ballX = p.x + 3;
+            ballY = p.y;
+
+            renderField();
+            updateBall();
+        }
+
+        function switchPlayer() {
+            if (!isGameActive) return;
+
+            // Topga eng yaqin o'yinchiga o'tish
+            let nearest = activePlayerIdx;
+            let minDist = Infinity;
+
+            playerTeam.players.forEach((p, i) => {
+                const dist = Math.abs(p.x - ballX) + Math.abs(p.y - ballY);
+                if (dist < minDist && i !== activePlayerIdx) {
+                    minDist = dist;
+                    nearest = i;
+                }
+            });
+
+            activePlayerIdx = nearest;
+            renderField();
+        }
+
+        // ============ KLAVIATURA ============
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+
+            if (!isGameActive) return;
+
+            switch(e.key.toLowerCase()) {
+                case 'a': actionPass(); break;
+                case 's': actionShoot(); break;
+                case 'd': actionSprint(); break;
+                case 'q': switchPlayer(); break;
+                case 'arrowup': movePlayer(0, -4); break;
+                case 'arrowdown': movePlayer(0, 4); break;
+                case 'arrowleft': movePlayer(-4, 0); break;
+                case 'arrowright': movePlayer(4, 0); break;
+                case 'enter': 
+                    const modal = document.getElementById('goalModal');
+                    if (modal.style.display === 'flex') {
+                        closeGoalModal();
+                    }
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        function movePlayer(dx, dy) {
+            const p = playerTeam.players[activePlayerIdx];
+            p.x = Math.max(5, Math.min(95, p.x + dx));
+            p.y = Math.max(10, Math.min(90, p.y + dy));
+
+            ballX = p.x + 3;
+            ballY = p.y;
+
+            renderField();
+            updateBall();
+        }
+
+        // ============ GOL ============
+        function showGoal(teamName, playerName, number) {
+            const modal = document.getElementById('goalModal');
+            document.getElementById('goalScorer').textContent = `${teamName} — #${number} ${playerName}`;
+            modal.style.display = 'flex';
+
+            setTimeout(() => {
+                if (modal.style.display === 'flex') {
+                    closeGoalModal();
+                }
+            }, 3000);
+        }
+
+        function closeGoalModal() {
+            document.getElementById('goalModal').style.display = 'none';
+            ballX = 50;
+            ballY = 50;
+            updateBall();
+        }
+
+        // ============ O'YIN TUGASHI ============
+        function endGame() {
+            isGameActive = false;
+            clearInterval(gameTimer);
+            clearInterval(cpuInterval);
+
+            const result = scoreHome > scoreAway ? "🏆 G'ALABA!" : 
+                          scoreHome < scoreAway ? "😔 MAG'LUBIYAT" : "🤝 DURANG";
+
+            document.getElementById('finalResult').textContent = result;
+            document.getElementById('finalScore').textContent = `${scoreHome} - ${scoreAway}`;
+            document.getElementById('gameOver').style.display = 'flex';
+        }
+
+        // ============ QO'LLANMA ============
+        function showControls() {
+            alert("🎮 BOSHQARUV:\n\n" +
+                  "↑ ↓ ← →  - O'yinchini harakatlantirish\n" +
+                  "A - To'pni uzatish (Pas)\n" +
+                  "S - Darvozaga zarba\n" +
+                  "D - Tez yugurish\n" +
+                  "Q - O'yinchini almashtirish\n" +
+                  "Enter - O'yinni davom ettirish");
+        }
+    </script>
+</body>
+</html>
