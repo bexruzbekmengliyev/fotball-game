@@ -110,6 +110,7 @@ const teams = {
     }
 };
 
+
 // O'yin o'zgaruvchilari
 let currentPlayerTeam = null;
 let cpuTeam = null;
