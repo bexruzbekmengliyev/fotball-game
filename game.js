@@ -433,6 +433,14 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+
+
+
+
+
+
+
+
 function movePlayer(dx, dy) {
     if (!isPlayerTurn) return;
     
